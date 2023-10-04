@@ -18,12 +18,14 @@ class MainActivity : AppCompatActivity() {
 
     private val quizViewModel: QuizViewModel by viewModels()
 
+    private var isCheater = false
+
     private val cheatLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         // Handle the result
         if (result.resultCode == Activity.RESULT_OK) {
-            quizViewModel.isCheater =
+            isCheater =
                 result.data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
         }
     }
@@ -44,6 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.nextButton.setOnClickListener {
             quizViewModel.moveToNext()
+            isCheater = false
             updateQuestion()
         }
 
@@ -90,7 +93,7 @@ class MainActivity : AppCompatActivity() {
     private fun checkAnswer(userAnswer: Boolean) {
         val correctAnswer = quizViewModel.currentQuestionAnswer
         val messageResId = when {
-            quizViewModel.isCheater -> R.string.judgment_toast
+            isCheater -> R.string.judgment_toast
             userAnswer == correctAnswer -> R.string.correct_toast
             else -> R.string.incorrect_toast
         }
